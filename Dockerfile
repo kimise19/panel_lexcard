@@ -5,7 +5,7 @@ FROM node:20-alpine as build-stage
 WORKDIR /app
 
 # Configurar variable de entorno
-ENV VITE_REACT_APP_BASE_URL="https://api-nexovo.kaizensoftware.com.ec"
+ENV VITE_REACT_APP_BASE_URL="https://api-lexcard.kaizensoftware.com.ec"
 
 # Copiar archivos de configuración
 COPY package*.json ./
