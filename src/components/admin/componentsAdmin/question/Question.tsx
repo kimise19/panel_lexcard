@@ -1,0 +1,156 @@
+import { Breadcrumb, TextInput, Button, Table, Pagination, Select } from "flowbite-react";
+import { FC, useEffect, useState, useCallback } from "react";
+import { HiArchive, HiPencil, HiPlus, HiTrash } from "react-icons/hi";
+import { APIQuestion } from "../../../models/modelsadmin/Question"; 
+import AddQuestionModal from "./AddQuestion";
+import EditQuestionModal from "./EditQuestion";
+import DeleteQuestionModal from "./DeleteQuestion";
+import { allQuestion } from "../../../services/servicesadmin/QuestionService";
+
+const QuestionComponent: FC = () => {
+  const [questions, setQuestions] = useState<APIQuestion[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [orderBy, setOrderBy] = useState("question");
+  const [orderDirection, setOrderDirection] = useState("asc");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<APIQuestion | null>(null);
+
+  const fetchQuestion = useCallback(async () => {
+    try {
+      const response = await allQuestion(pageNumber, pageSize, searchTerm, orderBy, orderDirection);
+      const testWithCategoryNames = response.items.map(question => ({
+        ...question,
+        subcategoryName: question.test ? question.test.name : "N/A",
+      }));
+      setQuestions(testWithCategoryNames);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [pageNumber, pageSize, searchTerm, orderBy, orderDirection]);
+
+  useEffect(() => {
+    fetchQuestion();
+  }, [fetchQuestion]);
+
+  const handleEditQuestion = (question: APIQuestion) => {
+    setSelectedQuestion(question);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteQuestion = (question: APIQuestion) => {
+    setSelectedQuestion(question);
+    setIsDeleteModalOpen(true);
+  };
+
+  return (
+    <>
+      <div className="mx-4 mt-4">
+        <Breadcrumb>
+          <Breadcrumb.Item icon={HiArchive}>Casos</Breadcrumb.Item>
+          <Breadcrumb.Item>Test</Breadcrumb.Item>
+        </Breadcrumb>
+      </div>
+      <div className="flex flex-col mx-4 mt-4 space-y-4">
+        <div className="w-full flex justify-between items-center">
+          <TextInput 
+            placeholder="Buscar categoría..." 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+          />
+          <Button className="text-gray-900 border-gray-200 bg-white  focus:ring-gray-300 enabled:hover:bg-gray-100 dark:text-white dark:border-gray-700 dark:bg-gray-800 dark:focus:ring-gray-800 dark:enabled:hover:bg-gray-700" 
+          size="mc"
+          onClick={() => setIsAddModalOpen(true)}>
+            <HiPlus className="mr-2 self-center" />
+            Agregar Test
+          </Button>
+        </div>
+
+        <div className="w-full p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+          <div className="flex justify-between items-center pb-2">
+            <Select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
+              <option value="question">Pregunta</option>
+              <option value="description">Descripción</option>
+            </Select>
+            <Select value={orderDirection} onChange={(e) => setOrderDirection(e.target.value)}>
+              <option value="asc">Ascendente</option>
+              <option value="desc">Descendente</option>
+            </Select>
+            <Select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </Select>
+          </div>
+          <Table hoverable>
+            <Table.Head>
+              <Table.HeadCell>Pregunta</Table.HeadCell>
+              <Table.HeadCell>Índice Correcto</Table.HeadCell>
+              <Table.HeadCell>Puntuación</Table.HeadCell>
+              <Table.HeadCell>Justificación</Table.HeadCell>
+              <Table.HeadCell>Nombre del Test</Table.HeadCell>
+              <Table.HeadCell>Acciones</Table.HeadCell>
+            </Table.Head>
+            <Table.Body>
+              {questions.map((question) => (
+                <Table.Row key={question.id}>
+                  <Table.Cell>{question.question}</Table.Cell>
+                  <Table.Cell>{question.correct}</Table.Cell>
+                  <Table.Cell>{question.score}</Table.Cell>
+                  <Table.Cell>{question.justification}</Table.Cell>
+                  <Table.Cell>{question.test.name}</Table.Cell>
+                  <Table.Cell>
+                    <div className="flex space-x-2">
+                      <Button color="success" onClick={() => handleEditQuestion(question)}>
+                        <HiPencil />
+                      </Button>
+                      <Button color="failure" onClick={() => handleDeleteQuestion(question)}>
+                        <HiTrash />
+                      </Button>
+                    </div>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+          <div className="flex justify-center mt-4">
+            <Pagination
+              currentPage={pageNumber}
+              totalPages={totalPages}
+              onPageChange={(page) => setPageNumber(page)}
+            />
+          </div>
+        </div>
+      </div>
+      <AddQuestionModal
+        isAddModalOpen={isAddModalOpen}
+        setIsAddModalOpen={setIsAddModalOpen}
+        refreshQuestions={fetchQuestion}
+      />
+      {selectedQuestion && (
+        <EditQuestionModal
+          isEditModalOpen={isEditModalOpen}
+          setIsEditModalOpen={setIsEditModalOpen}
+          selectedQuestion={selectedQuestion}
+          setSelectedQuestion={setSelectedQuestion}
+          refreshQuestion={fetchQuestion}
+        />
+      )}
+      {selectedQuestion && (
+        <DeleteQuestionModal
+          isDeleteModalOpen={isDeleteModalOpen}
+          setIsDeleteModalOpen={setIsDeleteModalOpen}
+          selectedQuestion={selectedQuestion}
+          refreshQuestion={fetchQuestion}
+        />
+      )}
+    </>
+  );
+};
+
+export default QuestionComponent;

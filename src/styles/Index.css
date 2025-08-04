@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos de gráficos */
+.apexcharts-tooltip {
+  @apply bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-0 rounded-lg shadow-lg !important;
+}
+
+.apexcharts-tooltip .apexcharts-tooltip-title {
+  @apply py-2 px-4 bg-gray-100 dark:bg-gray-600 border-b border-gray-200 dark:border-gray-500 !important;
+}
+
+.apexcharts-xaxistooltip {
+  @apply text-gray-500 border-0 bg-white dark:bg-gray-700 dark:text-gray-300 rounded-lg shadow-lg !important;
+}
+
+.apexcharts-tooltip .apexcharts-tooltip-text-y-value {
+  @apply dark:text-white;
+}
+
+.apexcharts-xaxistooltip-text {
+  @apply font-medium text-sm !important;
+}
+
+.apexcharts-xaxistooltip:before,
+.apexcharts-xaxistooltip:after {
+  @apply border-0 !important;
+}
+
+:root {
+  --primary: #ffffff;
+  --secondary: #6b7280;
+  --dark-primary: #1f2937;
+  --dark-secondary: #9ca3af;
+  --background: var(--primary);
+  --scrollbar-track: var(--primary);
+  --scrollbar-thumb: var(--secondary);
+}
+
+/* Firefox */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 15px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 14px;
+  border: 3px solid var(--scrollbar-track);
+}
+
+/* Variables para tema oscuro */
+.dark {
+  --background: var(--dark-primary);
+  --scrollbar-track: var(--dark-primary);
+  --scrollbar-thumb: var(--dark-secondary);
+}
+
+body {
+  background-color: var(--background);
+}
