@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { UserProvider} from "./context/UserContext";
 import {useUser } from "./context/useUser";
+import LogoLoader from "./components/utils/LogoLoader";
 import Login from "./components/auth/Login";
 import { Register } from "./components/auth/Register";
 
@@ -48,7 +49,7 @@ const App = () => {
   const { user, loading } = useUser();
 
   if (loading) {
-    return <div>Cargando...</div>; // Puedes personalizar este mensaje o agregar un spinner
+    return <LogoLoader />;
   }
 
   return (

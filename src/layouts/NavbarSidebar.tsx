@@ -118,7 +118,7 @@ const MainContentFooter: FC = function () {
         </div>
       </Footer>
       <p className="mt-4 mb-0 text-center text-sm text-gray-500 dark:text-gray-300">
-        &copy;{currentYear} <span className="font-bold">CopyXpress</span>{" "}
+        &copy;{currentYear} <span className="font-bold">LEXCARD</span>{" "}
         Reservados todos los derechos.
       </p>
       <p className="mb-4 text-center text-sm text-gray-500 dark:text-gray-300">

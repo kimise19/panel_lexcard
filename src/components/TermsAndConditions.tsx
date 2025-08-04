@@ -9,11 +9,11 @@ const TermsAndConditions: FC = () => {
           <div className="text-center mb-8">
             <img
               src={logo}
-              alt="CopyXpress Logo"
+              alt="LEXCARD Logo"
               className="h-60 mx-auto mb-8"
             />
             <h1 className="text-3xl font-bold mb-2 text-gray-800 dark:text-gray-100">
-              Términos y Condiciones de CopyXpress
+              Términos y Condiciones de LEXCARD
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               Última actualización: 5 de octubre de 2023
@@ -22,7 +22,7 @@ const TermsAndConditions: FC = () => {
 
           <div className="prose prose-slate dark:prose-invert max-w-none">
             <p className="lead text-gray-800 dark:text-gray-200">
-              Bienvenido a CopyXpress, una aplicación de comercio electrónico
+              Bienvenido a LEXCARD, una aplicación de comercio electrónico
               que ofrece servicios de impresión y venta de productos de
               papelería. Al utilizar nuestra aplicación, aceptas los siguientes
               términos y condiciones. Por favor, léelos detenidamente.
@@ -34,7 +34,7 @@ const TermsAndConditions: FC = () => {
               </h2>
               <p className="text-gray-800 dark:text-gray-200">
                 Al crear una cuenta, iniciar sesión o realizar cualquier pedido
-                a través de CopyXpress, aceptas cumplir con estos términos y
+                a través de LEXCARD, aceptas cumplir con estos términos y
                 condiciones. Si no estás de acuerdo con alguna parte de estos
                 términos, no deberás utilizar nuestra aplicación.
               </p>
@@ -48,7 +48,7 @@ const TermsAndConditions: FC = () => {
                 Para realizar pedidos o comprar productos, deberás registrarte
                 proporcionando información veraz y actualizada. Eres responsable
                 de mantener la confidencialidad de tu cuenta y contraseña.
-                CopyXpress no será responsable de cualquier pérdida o daño
+                LEXCARD no será responsable de cualquier pérdida o daño
                 resultante de un acceso no autorizado a tu cuenta.
               </p>
             </section>
@@ -64,7 +64,7 @@ const TermsAndConditions: FC = () => {
                 Puedes cargar archivos a través de la aplicación para realizar
                 pedidos de impresión. Es tu responsabilidad asegurarte de que
                 los archivos cargados sean correctos y estén en el formato
-                adecuado. CopyXpress no se hace responsable por errores en la
+                adecuado. LEXCARD no se hace responsable por errores en la
                 calidad de impresión derivados de archivos incorrectos o
                 defectuosos.
               </p>
@@ -96,7 +96,7 @@ const TermsAndConditions: FC = () => {
               <p className="text-gray-800 dark:text-gray-200">
                 Aceptamos pagos con tarjeta de crédito o débito a través de
                 plataformas de pago seguras. Al realizar un pago con tarjeta,
-                autorizas a CopyXpress a cargar el monto total de la
+                autorizas a LEXCARD a cargar el monto total de la
                 transacción.
               </p>
             </section>
@@ -106,10 +106,10 @@ const TermsAndConditions: FC = () => {
                 5. Ubicación y Envío
               </h2>
               <p className="text-gray-800 dark:text-gray-200">
-                Al utilizar CopyXpress, solicitamos acceso a la ubicación de tu
+                Al utilizar LEXCARD, solicitamos acceso a la ubicación de tu
                 dispositivo para procesar tu dirección de envío. Es tu
                 responsabilidad asegurarte de que la dirección proporcionada sea
-                correcta. CopyXpress no se responsabiliza por retrasos o
+                correcta. LEXCARD no se responsabiliza por retrasos o
                 problemas en la entrega debido a direcciones incorrectas o
                 incompletas.
               </p>
@@ -125,7 +125,7 @@ const TermsAndConditions: FC = () => {
               <p className="text-gray-800 dark:text-gray-200">
                 Dado que los pedidos de impresión son personalizados, no se
                 aceptan devoluciones ni reembolsos, salvo en casos de defectos
-                evidentes en la impresión atribuibles a CopyXpress.
+                evidentes en la impresión atribuibles a LEXCARD.
               </p>
               <h3 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
                 6.2. Productos Físicos
@@ -155,9 +155,9 @@ const TermsAndConditions: FC = () => {
                 8. Propiedad Intelectual
               </h2>
               <p className="text-gray-800 dark:text-gray-200">
-                Todo el contenido de la aplicación CopyXpress, incluyendo, entre
+                Todo el contenido de la aplicación LEXCARD, incluyendo, entre
                 otros, textos, gráficos, logotipos, imágenes y software, es
-                propiedad de CopyXpress y está protegido por las leyes de
+                propiedad de LEXCARD y está protegido por las leyes de
                 propiedad intelectual.
               </p>
             </section>
@@ -179,7 +179,7 @@ const TermsAndConditions: FC = () => {
                 10. Limitación de Responsabilidad
               </h2>
               <p className="text-gray-800 dark:text-gray-200">
-                CopyXpress no será responsable por cualquier daño indirecto,
+                LEXCARD no será responsable por cualquier daño indirecto,
                 incidental o consecuente que resulte del uso de la aplicación o
                 de los productos y servicios adquiridos a través de ella.
               </p>
