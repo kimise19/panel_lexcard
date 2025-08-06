@@ -5,9 +5,11 @@ export interface User {
 }
 
 export interface Profile {
+  id: number;
   displayName: string;
   email: string;
   roles: string[];
+  verified: boolean;
 }
 export interface RegisterData {
   displayName: string;
