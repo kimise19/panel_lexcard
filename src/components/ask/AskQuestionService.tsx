@@ -1,24 +1,14 @@
 import { getAllQuestionsForSubcategory } from '../services/CategoryService';
 import { APIQuestion, Question } from '../models/Question';
 import { Subcategory } from '../models/Subcategory';
-
-// Get base URL from environment variables
-const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL;
+import { getImageUrlFromString } from '../utils/ImageUtils';
 
 // Helper function for image URLs
 export const getImageUrl = (imagePath: string | undefined): string => {
   if (!imagePath) return '/default-category.webp';
   
-  // If the image path already includes http(s), use it as is
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
-  }
-  
-  // Remove leading slash if both baseUrl and imagePath have it
-  const formattedPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
-  
-  // Combine base URL with image path
-  return `${baseUrl}/${formattedPath}`;
+  // Use the new utility function for consistent image URL handling
+  return getImageUrlFromString(imagePath);
 };
 
 // Load reviewed questions from localStorage

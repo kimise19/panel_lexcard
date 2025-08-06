@@ -31,7 +31,7 @@ const Ask: React.FC = () => {
     try {
       setLoading(true);
       const categoriesData = await getAllCategories();
-      setCategories(categoriesData);
+      setCategories(categoriesData.items); // Ahora getAllCategories devuelve un objeto con items
       setLoading(false);
     } catch (err) {
       setError('Error fetching categories');

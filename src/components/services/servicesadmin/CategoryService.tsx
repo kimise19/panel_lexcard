@@ -1,95 +1,119 @@
 import {Category,Categorie} from '../../models/modelsadmin/Category';
+import { 
+  createCategoryGraphQL, 
+  updateCategoryGraphQL, 
+  deleteCategoryGraphQL,
+  getCategoriesGraphQL,
+  CreateCategoryInput,
+  UpdateCategoryInput,
+  CategoryConnection,
+  CategoryGraphQL,
+  PaginationInput
+} from '../GraphQLService';
+import { convertFileToBase64 } from '../../utils/ImageUtils';
+
+// Función para convertir CategoryGraphQL a Category para el admin
+const convertGraphQLCategoryToCategory = (graphqlCategory: CategoryGraphQL): Category => {
+  return {
+    id: graphqlCategory.id,
+    name: graphqlCategory.name,
+    description: graphqlCategory.description || "",
+    image: null, // GraphQL devuelve string, pero el modelo espera File|null
+    createdAt: graphqlCategory.createdAt,
+    updatedAt: graphqlCategory.updatedAt,
+    subcategories: [] // Las subcategorías se cargan por separado
+  };
+};
 
 export const createCategory = async (category: Categorie): Promise<Categorie> => {
-    const formData = new FormData();
-    formData.append("name", category.name);
-    formData.append("description", category.description);
-    if (category.image) {
-        formData.append("image", category.image); // Agregar la imagen solo si está presente
+    try {
+        const input: CreateCategoryInput = {
+            name: category.name,
+            description: category.description,
+            // Convertir imagen File a base64 si existe
+            image: category.image ? await convertFileToBase64(category.image) : undefined
+        };
+
+        const result = await createCategoryGraphQL(input);
+        
+        return {
+            id: result.id,
+            name: result.name,
+            description: result.description || "",
+            image: null // GraphQL devuelve string, pero el modelo espera File|null
+        };
+    } catch (error) {
+        console.error("Error creating category:", error);
+        throw new Error(
+            error instanceof Error ? error.message : "No se pudo crear la categoría"
+        );
     }
-
-    const response = await fetch(`/api/categories`, {
-        method: "POST",
-        body: formData, // Se envía FormData en lugar de JSON
-    });
-
-    if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || "La respuesta de la red no fue satisfactoria");
-    }
-
-    const data: Categorie = await response.json();
-    return data;
 };
 
 export const updateCategoryById = async (categoryId: string, category: Categorie): Promise<Categorie> => {
-    const formData = new FormData();
-    formData.append("name", category.name);
-    formData.append("description", category.description);
-    if (category.image) {
-        formData.append("image", category.image); // Agregar la imagen solo si está presente
+    try {
+        const input: UpdateCategoryInput = {
+            name: category.name,
+            description: category.description,
+            // Convertir imagen File a base64 si existe
+            image: category.image ? await convertFileToBase64(category.image) : undefined
+        };
+
+        const result = await updateCategoryGraphQL(parseInt(categoryId), input);
+        
+        return {
+            id: result.id,
+            name: result.name,
+            description: result.description || "",
+            image: null // GraphQL devuelve string, pero el modelo espera File|null
+        };
+    } catch (error) {
+        console.error("Error updating category:", error);
+        throw new Error(
+            error instanceof Error ? error.message : "No se pudo actualizar la categoría"
+        );
     }
-
-    const response = await fetch(`/api/categories/${categoryId}`, {
-        method: "PUT",
-        body: formData, // Se envía FormData en lugar de JSON
-    });
-
-    if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || "La respuesta de la red no fue satisfactoria");
-    }
-
-    const data: Categorie = await response.json();
-    return data;
 }
 
 export const deleteCategoryById = async (categoryId: string): Promise<void> => {
     try {
-        const response = await fetch(`/api/categories/${categoryId}`, {
-            method: "DELETE",
-        });
-
-        if (!response.ok) {
-            const errorResponse = await response.json();
-            throw new Error(errorResponse.message || "La respuesta de la red no fue satisfactoria");
-        }
+        await deleteCategoryGraphQL(parseInt(categoryId));
     } catch (error) {
-        if (error instanceof Error) {
-            console.error("Error al borrar la categoría:", error.message);
-            throw new Error("No se pudo borrar la categoría. Por favor, inténtelo de nuevo más tarde.");
-        } else {
-            console.error("Error desconocido al borrar la categoría");
-            throw new Error("No se pudo borrar la categoría debido a un error desconocido. Por favor, inténtelo de nuevo más tarde.");
-        }
+        console.error("Error deleting category:", error);
+        throw new Error(
+            error instanceof Error ? error.message : "No se pudo eliminar la categoría"
+        );
     }
 }
 
-
-
 export const allCategory = async (
-    pageNumber: number = 1,
     pageSize: number = 10,
-    search: string = "",
-    orderBy: string = "",
-    orderDirection: string = ""
+    search: string = ""
   ): Promise<{ items: Category[]; totalPages: number; totalItems: number }> => {
-    const queryParams = new URLSearchParams({
-      pageNumber: pageNumber.toString(),
-      pageSize: pageSize.toString(),
-      search,
-      orderBy,
-      orderDirection,
-    });
-  
-    const response = await fetch(`/api/categories?${queryParams.toString()}`);
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(
-        errorResponse.message || "La respuesta de la red no fue satisfactoria"
-      );
+    try {
+        const pagination: PaginationInput = {
+            first: pageSize,
+            // Para implementar paginación por número de página, podrías calcular offset
+            // after: pageNumber > 1 ? calculateCursor(pageNumber, pageSize) : undefined
+        };
+
+        const result: CategoryConnection = await getCategoriesGraphQL(pagination, search);
+        
+        const categories = result.edges.map(edge => convertGraphQLCategoryToCategory(edge.node));
+        
+        // Calcular total de páginas basado en totalCount y pageSize
+        const totalPages = Math.ceil(result.totalCount / pageSize);
+        
+        return {
+            items: categories,
+            totalPages,
+            totalItems: result.totalCount
+        };
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        throw new Error(
+            error instanceof Error ? error.message : "Error al obtener las categorías"
+        );
     }
-  
-    return await response.json();
-  };
+};
   

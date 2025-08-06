@@ -207,3 +207,143 @@ export const changePasswordWithTokenGraphQL = async (
 export const verifyEmailGraphQL = async (token: string): Promise<void> => {
   await graphqlRequest<{ verifyEmail: boolean }>(VERIFY_EMAIL_MUTATION, { token });
 };
+
+// Category Management GraphQL Operations
+const GET_CATEGORIES_QUERY = `
+  query GetCategories($pagination: PaginationInput, $search: String) {
+    categories(pagination: $pagination, search: $search) {
+      edges {
+        node {
+          id
+          name
+          description
+          image
+          createdAt
+          updatedAt
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const CREATE_CATEGORY_MUTATION = `
+  mutation CreateCategory($input: CreateCategoryInput!) {
+    createCategory(input: $input) {
+      id
+      name
+      description
+      image
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const UPDATE_CATEGORY_MUTATION = `
+  mutation UpdateCategory($id: Int!, $input: UpdateCategoryInput!) {
+    updateCategory(id: $id, input: $input) {
+      id
+      name
+      description
+      image
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const DELETE_CATEGORY_MUTATION = `
+  mutation DeleteCategory($id: Int!) {
+    deleteCategory(id: $id)
+  }
+`;
+
+// Category Types
+export interface PaginationInput {
+  first?: number;
+  after?: string;
+  last?: number;
+  before?: string;
+}
+
+export interface CategoryGraphQL {
+  id: number;
+  name: string;
+  description?: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CategoryEdge {
+  node: CategoryGraphQL;
+}
+
+export interface PageInfo {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor?: string;
+  endCursor?: string;
+}
+
+export interface CategoryConnection {
+  edges: CategoryEdge[];
+  pageInfo: PageInfo;
+  totalCount: number;
+}
+
+export interface CreateCategoryInput {
+  name: string;
+  description?: string;
+  image?: string;
+}
+
+export interface UpdateCategoryInput {
+  name?: string;
+  description?: string;
+  image?: string;
+}
+
+// Category Service Functions
+export const getCategoriesGraphQL = async (
+  pagination?: PaginationInput,
+  search?: string
+): Promise<CategoryConnection> => {
+  const result = await graphqlRequest<{ categories: CategoryConnection }>(
+    GET_CATEGORIES_QUERY,
+    { pagination, search }
+  );
+  return result.categories;
+};
+
+export const createCategoryGraphQL = async (
+  input: CreateCategoryInput
+): Promise<CategoryGraphQL> => {
+  const result = await graphqlRequest<{ createCategory: CategoryGraphQL }>(
+    CREATE_CATEGORY_MUTATION,
+    { input }
+  );
+  return result.createCategory;
+};
+
+export const updateCategoryGraphQL = async (
+  id: number,
+  input: UpdateCategoryInput
+): Promise<CategoryGraphQL> => {
+  const result = await graphqlRequest<{ updateCategory: CategoryGraphQL }>(
+    UPDATE_CATEGORY_MUTATION,
+    { id, input }
+  );
+  return result.updateCategory;
+};
+
+export const deleteCategoryGraphQL = async (id: number): Promise<void> => {
+  await graphqlRequest<{ deleteCategory: boolean }>(DELETE_CATEGORY_MUTATION, { id });
+};

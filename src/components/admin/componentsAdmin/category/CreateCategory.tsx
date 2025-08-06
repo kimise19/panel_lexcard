@@ -22,13 +22,13 @@ const CreateCategory: FC = () => {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await allCategory(pageNumber, pageSize, searchTerm, orderBy, orderDirection);
+      const response = await allCategory(pageSize, searchTerm);
       setCategories(response.items);
       setTotalPages(response.totalPages);
     } catch (error) {
       console.error(error);
     }
-  }, [pageNumber, pageSize, searchTerm, orderBy, orderDirection]);
+  }, [pageSize, searchTerm]);
 
   useEffect(() => {
     fetchCategories();

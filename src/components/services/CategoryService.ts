@@ -1,19 +1,56 @@
 import { Category } from "../models/Category";
-import { APIQuestion, PaginatedResponse } from "../models/Question";
+import { APIQuestion } from "../models/Question";
 import { SubcategoryDetail } from "../models/Subcategory";
 import { Test } from "../models/Tets";
+import { 
+  getCategoriesGraphQL, 
+  CategoryConnection, 
+  CategoryGraphQL, 
+  PaginationInput 
+} from "./GraphQLService";
 
-// Obtener todas las categorías
-export const getAllCategories = async (): Promise<Category[]> => {
-  const response = await fetch(`/api/categories`);
-  if (!response.ok) {
-    const errorResponse = await response.json();
+// Función para convertir CategoryGraphQL a Category
+const convertGraphQLCategoryToCategory = (graphqlCategory: CategoryGraphQL): Category => {
+  return {
+    id: graphqlCategory.id,
+    name: graphqlCategory.name,
+    description: graphqlCategory.description || "",
+    image: null, // GraphQL devuelve string, pero el modelo espera File|null
+    createdAt: graphqlCategory.createdAt,
+    updatedAt: graphqlCategory.updatedAt,
+    subcategories: [] // Las subcategorías se cargan por separado
+  };
+};
+
+// Obtener todas las categorías usando GraphQL
+export const getAllCategories = async (
+  pageSize: number = 10,
+  search?: string
+): Promise<{ items: Category[]; totalPages: number; totalItems: number }> => {
+  try {
+    const pagination: PaginationInput = {
+      first: pageSize,
+      // Si necesitas implementar paginación offset, puedes usar after con cursor
+    };
+
+    const result: CategoryConnection = await getCategoriesGraphQL(pagination, search);
+    
+    const categories = result.edges.map(edge => convertGraphQLCategoryToCategory(edge.node));
+    
+    // Calcular total de páginas basado en totalCount y pageSize
+    const totalPages = Math.ceil(result.totalCount / pageSize);
+    
+    return {
+      items: categories,
+      totalPages,
+      totalItems: result.totalCount
+    };
+  } catch (error) {
+    console.error("Error fetching categories:", error);
     throw new Error(
-      errorResponse.message || "La respuesta de la red no fue satisfactoria"
+      error instanceof Error ? error.message : "Error al obtener las categorías"
     );
   }
-  const data: PaginatedResponse<Category> = await response.json();
-  return data.items; // Devolver solo el array de items
 };
 
 // Paso 1: Obtener detalles de la subcategoría con pruebas
