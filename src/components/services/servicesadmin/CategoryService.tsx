@@ -10,7 +10,6 @@ import {
   CategoryGraphQL,
   PaginationInput
 } from '../GraphQLService';
-import { convertFileToBase64 } from '../../utils/ImageUtils';
 
 // Función para convertir CategoryGraphQL a Category para el admin
 const convertGraphQLCategoryToCategory = (graphqlCategory: CategoryGraphQL): Category => {
@@ -30,8 +29,8 @@ export const createCategory = async (category: Categorie): Promise<Categorie> =>
         const input: CreateCategoryInput = {
             name: category.name,
             description: category.description,
-            // Convertir imagen File a base64 si existe
-            image: category.image ? await convertFileToBase64(category.image) : undefined
+            // Solo incluir image si existe
+            ...(category.image && { image: category.image })
         };
 
         const result = await createCategoryGraphQL(input);
@@ -55,8 +54,8 @@ export const updateCategoryById = async (categoryId: string, category: Categorie
         const input: UpdateCategoryInput = {
             name: category.name,
             description: category.description,
-            // Convertir imagen File a base64 si existe
-            image: category.image ? await convertFileToBase64(category.image) : undefined
+            // Solo incluir image si existe
+            ...(category.image && { image: category.image })
         };
 
         const result = await updateCategoryGraphQL(parseInt(categoryId), input);

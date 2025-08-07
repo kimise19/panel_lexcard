@@ -24,7 +24,7 @@ const SubcategoryComponent: FC = () => {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await allCategory();
+      const response = await allCategory(10, ""); // Usar nueva interfaz
       setCategories(response.items);
     } catch (error) {
       console.error(error);
@@ -33,7 +33,7 @@ const SubcategoryComponent: FC = () => {
 
   const fetchSubcategories = useCallback(async () => {
     try {
-      const response = await allSubcategory(pageNumber, pageSize, searchTerm, orderBy, orderDirection);
+      const response = await allSubcategory(pageSize, searchTerm); // Usar nueva interfaz
       const subcategoriesWithCategoryNames = response.items.map(subcategory => {
         const category = categories.find(cat => cat.id === subcategory.categoryId);
         return {
@@ -46,7 +46,7 @@ const SubcategoryComponent: FC = () => {
     } catch (error) {
       console.error(error);
     }
-  }, [pageNumber, pageSize, searchTerm, orderBy, orderDirection, categories]);
+  }, [pageSize, searchTerm, categories]);
 
   useEffect(() => {
     fetchCategories();

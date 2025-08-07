@@ -1,4 +1,4 @@
-import { Breadcrumb, TextInput, Button, Table, Pagination, Select } from "flowbite-react";
+import { Breadcrumb, TextInput, Button, Table, Select } from "flowbite-react";
 import { FC, useEffect, useState, useCallback } from "react";
 import { HiArchive, HiPencil, HiPlus, HiTrash } from "react-icons/hi";
 import { APIQuestion } from "../../../models/modelsadmin/Question"; 
@@ -11,28 +11,23 @@ const QuestionComponent: FC = () => {
   const [questions, setQuestions] = useState<APIQuestion[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [orderBy, setOrderBy] = useState("question");
-  const [orderDirection, setOrderDirection] = useState("asc");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] = useState<APIQuestion | null>(null);
 
   const fetchQuestion = useCallback(async () => {
     try {
-      const response = await allQuestion(pageNumber, pageSize, searchTerm, orderBy, orderDirection);
-      const testWithCategoryNames = response.items.map(question => ({
+      const response = await allQuestion(pageSize, searchTerm);
+      const testWithCategoryNames = response.items.map((question: APIQuestion) => ({
         ...question,
         subcategoryName: question.test ? question.test.name : "N/A",
       }));
       setQuestions(testWithCategoryNames);
-      setTotalPages(response.totalPages);
     } catch (error) {
       console.error(error);
     }
-  }, [pageNumber, pageSize, searchTerm, orderBy, orderDirection]);
+  }, [pageSize, searchTerm]);
 
   useEffect(() => {
     fetchQuestion();
@@ -72,15 +67,7 @@ const QuestionComponent: FC = () => {
         </div>
 
         <div className="w-full p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-          <div className="flex justify-between items-center pb-2">
-            <Select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
-              <option value="question">Pregunta</option>
-              <option value="description">Descripción</option>
-            </Select>
-            <Select value={orderDirection} onChange={(e) => setOrderDirection(e.target.value)}>
-              <option value="asc">Ascendente</option>
-              <option value="desc">Descendente</option>
-            </Select>
+          <div className="flex justify-end items-center pb-2">
             <Select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
               <option value="5">5</option>
               <option value="10">10</option>
@@ -118,13 +105,6 @@ const QuestionComponent: FC = () => {
               ))}
             </Table.Body>
           </Table>
-          <div className="flex justify-center mt-4">
-            <Pagination
-              currentPage={pageNumber}
-              totalPages={totalPages}
-              onPageChange={(page) => setPageNumber(page)}
-            />
-          </div>
         </div>
       </div>
       <AddQuestionModal

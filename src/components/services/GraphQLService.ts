@@ -56,6 +56,69 @@ const graphqlRequest = async <T>(
   return result.data;
 };
 
+// Helper function for multipart form data requests (for file uploads)
+const multipartGraphQLRequest = async <T>(
+  query: string,
+  variables?: Record<string, unknown>,
+  files?: Record<string, File>
+): Promise<T> => {
+  const token = getStorageItem("authToken");
+  
+  const formData = new FormData();
+  
+  // Add the GraphQL operation
+  formData.append('operations', JSON.stringify({
+    query,
+    variables,
+  }));
+
+  // Add file map for GraphQL multipart specification
+  if (files && Object.keys(files).length > 0) {
+    const map: Record<string, string[]> = {};
+    let fileIndex = 0;
+    
+    Object.keys(files).forEach(key => {
+      map[fileIndex.toString()] = [`variables.${key}`];
+      formData.append(fileIndex.toString(), files[key]);
+      fileIndex++;
+    });
+    
+    formData.append('map', JSON.stringify(map));
+  }
+
+  const headers: Record<string, string> = {};
+
+  // Add authorization header if token exists
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  // Note: Don't set Content-Type for FormData, let the browser set it with boundary
+
+  const response = await fetch(GRAPHQL_ENDPOINT, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+  }
+
+  const result: GraphQLResponse<T> = await response.json();
+
+  if (result.errors && result.errors.length > 0) {
+    throw new Error(result.errors[0].message);
+  }
+
+  if (!result.data) {
+    throw new Error("No data received from GraphQL server");
+  }
+
+  return result.data;
+};
+
 // GraphQL Mutations and Queries
 const LOGIN_MUTATION = `
   mutation Login($input: LoginInput!) {
@@ -265,6 +328,153 @@ const DELETE_CATEGORY_MUTATION = `
   }
 `;
 
+// Subcategory Management GraphQL Operations
+const GET_SUBCATEGORIES_QUERY = `
+  query GetSubcategories($pagination: PaginationInput, $search: String) {
+    subcategories(pagination: $pagination, search: $search) {
+      edges {
+        node {
+          id
+          name
+          description
+          categoryId
+          createdAt
+          updatedAt
+          category {
+            id
+            name
+            description
+            image
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const CREATE_SUBCATEGORY_MUTATION = `
+  mutation CreateSubcategory($input: CreateSubcategoryInput!) {
+    createSubcategory(input: $input) {
+      id
+      name
+      description
+      categoryId
+      createdAt
+      updatedAt
+      category {
+        id
+        name
+        description
+        image
+      }
+    }
+  }
+`;
+
+const UPDATE_SUBCATEGORY_MUTATION = `
+  mutation UpdateSubcategory($id: Int!, $input: UpdateSubcategoryInput!) {
+    updateSubcategory(id: $id, input: $input) {
+      id
+      name
+      description
+      categoryId
+      createdAt
+      updatedAt
+      category {
+        id
+        name
+        description
+        image
+      }
+    }
+  }
+`;
+
+const DELETE_SUBCATEGORY_MUTATION = `
+  mutation DeleteSubcategory($id: Int!) {
+    deleteSubcategory(id: $id)
+  }
+`;
+
+// Question Management GraphQL Operations
+const GET_QUESTIONS_QUERY = `
+  query GetQuestions($pagination: PaginationInput, $search: String) {
+    questions(pagination: $pagination, search: $search) {
+      edges {
+        node {
+          id
+          question
+          options
+          answers
+          correct
+          justification
+          score
+          type
+          testId
+          createdAt
+          updatedAt
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const CREATE_QUESTION_MUTATION = `
+  mutation CreateQuestion($input: CreateQuestionInput!) {
+    createQuestion(input: $input) {
+      id
+      question
+      options
+      answers
+      correct
+      justification
+      score
+      type
+      testId
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const UPDATE_QUESTION_MUTATION = `
+  mutation UpdateQuestion($id: Int!, $input: UpdateQuestionInput!) {
+    updateQuestion(id: $id, input: $input) {
+      id
+      question
+      options
+      answers
+      correct
+      justification
+      score
+      type
+      testId
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const DELETE_QUESTION_MUTATION = `
+  mutation DeleteQuestion($id: Int!) {
+    deleteQuestion(id: $id)
+  }
+`;
+
 // Category Types
 export interface PaginationInput {
   first?: number;
@@ -302,13 +512,104 @@ export interface CategoryConnection {
 export interface CreateCategoryInput {
   name: string;
   description?: string;
-  image?: string;
+  image?: File;
 }
 
 export interface UpdateCategoryInput {
   name?: string;
   description?: string;
-  image?: string;
+  image?: File;
+}
+
+// Subcategory Types
+export interface SubcategoryGraphQL {
+  id: number;
+  name: string;
+  description?: string;
+  categoryId: number;
+  createdAt: string;
+  updatedAt: string;
+  category: {
+    id: number;
+    name: string;
+    description?: string;
+    image?: string;
+  };
+}
+
+export interface SubcategoryEdge {
+  node: SubcategoryGraphQL;
+}
+
+export interface SubcategoryConnection {
+  edges: SubcategoryEdge[];
+  pageInfo: PageInfo;
+  totalCount: number;
+}
+
+export interface CreateSubcategoryInput {
+  name: string;
+  description?: string;
+  categoryId: number;
+}
+
+export interface UpdateSubcategoryInput {
+  name?: string;
+  description?: string;
+  categoryId?: number;
+}
+
+// Question Types
+export enum QuestionType {
+  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
+  TRUE_FALSE = 'TRUE_FALSE',
+  SINGLE_CHOICE = 'SINGLE_CHOICE'
+}
+
+export interface QuestionGraphQL {
+  id: number;
+  question: string;
+  options: string[];
+  answers: string[];
+  correct: string[];
+  justification: string;
+  score: number;
+  type: QuestionType;
+  testId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuestionEdge {
+  node: QuestionGraphQL;
+}
+
+export interface QuestionConnection {
+  edges: QuestionEdge[];
+  pageInfo: PageInfo;
+  totalCount: number;
+}
+
+export interface CreateQuestionInput {
+  question: string;
+  options: string[];
+  answers: string[];
+  correct: string[];
+  justification: string;
+  score: number;
+  type: QuestionType;
+  testId: number;
+}
+
+export interface UpdateQuestionInput {
+  question?: string;
+  options?: string[];
+  answers?: string[];
+  correct?: string[];
+  justification?: string;
+  score?: number;
+  type?: QuestionType;
+  testId?: number;
 }
 
 // Category Service Functions
@@ -326,24 +627,135 @@ export const getCategoriesGraphQL = async (
 export const createCategoryGraphQL = async (
   input: CreateCategoryInput
 ): Promise<CategoryGraphQL> => {
-  const result = await graphqlRequest<{ createCategory: CategoryGraphQL }>(
-    CREATE_CATEGORY_MUTATION,
-    { input }
-  );
-  return result.createCategory;
+  // Si hay un archivo, usar multipart; si no, usar JSON regular
+  if (input.image) {
+    const variables = { input };
+    const files = { 'input.image': input.image };
+    
+    const result = await multipartGraphQLRequest<{ createCategory: CategoryGraphQL }>(
+      CREATE_CATEGORY_MUTATION,
+      variables,
+      files
+    );
+    return result.createCategory;
+  } else {
+    // Crear input sin el campo image si no hay archivo
+    const inputWithoutFile = {
+      name: input.name,
+      description: input.description
+    };
+    
+    const result = await graphqlRequest<{ createCategory: CategoryGraphQL }>(
+      CREATE_CATEGORY_MUTATION,
+      { input: inputWithoutFile }
+    );
+    return result.createCategory;
+  }
 };
 
 export const updateCategoryGraphQL = async (
   id: number,
   input: UpdateCategoryInput
 ): Promise<CategoryGraphQL> => {
-  const result = await graphqlRequest<{ updateCategory: CategoryGraphQL }>(
-    UPDATE_CATEGORY_MUTATION,
-    { id, input }
-  );
-  return result.updateCategory;
+  // Si hay un archivo, usar multipart; si no, usar JSON regular
+  if (input.image) {
+    const variables = { id, input };
+    const files = { 'input.image': input.image };
+    
+    const result = await multipartGraphQLRequest<{ updateCategory: CategoryGraphQL }>(
+      UPDATE_CATEGORY_MUTATION,
+      variables,
+      files
+    );
+    return result.updateCategory;
+  } else {
+    // Crear input sin el campo image si no hay archivo
+    const inputWithoutFile: Partial<UpdateCategoryInput> = {};
+    if (input.name !== undefined) inputWithoutFile.name = input.name;
+    if (input.description !== undefined) inputWithoutFile.description = input.description;
+    
+    const result = await graphqlRequest<{ updateCategory: CategoryGraphQL }>(
+      UPDATE_CATEGORY_MUTATION,
+      { id, input: inputWithoutFile }
+    );
+    return result.updateCategory;
+  }
 };
 
 export const deleteCategoryGraphQL = async (id: number): Promise<void> => {
   await graphqlRequest<{ deleteCategory: boolean }>(DELETE_CATEGORY_MUTATION, { id });
+};
+
+// Subcategory Service Functions
+export const getSubcategoriesGraphQL = async (
+  pagination?: PaginationInput,
+  search?: string
+): Promise<SubcategoryConnection> => {
+  const result = await graphqlRequest<{ subcategories: SubcategoryConnection }>(
+    GET_SUBCATEGORIES_QUERY,
+    { pagination, search }
+  );
+  return result.subcategories;
+};
+
+export const createSubcategoryGraphQL = async (
+  input: CreateSubcategoryInput
+): Promise<SubcategoryGraphQL> => {
+  const result = await graphqlRequest<{ createSubcategory: SubcategoryGraphQL }>(
+    CREATE_SUBCATEGORY_MUTATION,
+    { input }
+  );
+  return result.createSubcategory;
+};
+
+export const updateSubcategoryGraphQL = async (
+  id: number,
+  input: UpdateSubcategoryInput
+): Promise<SubcategoryGraphQL> => {
+  const result = await graphqlRequest<{ updateSubcategory: SubcategoryGraphQL }>(
+    UPDATE_SUBCATEGORY_MUTATION,
+    { id, input }
+  );
+  return result.updateSubcategory;
+};
+
+export const deleteSubcategoryGraphQL = async (id: number): Promise<void> => {
+  await graphqlRequest<{ deleteSubcategory: boolean }>(DELETE_SUBCATEGORY_MUTATION, { id });
+};
+
+// Question Service Functions
+export const getQuestionsGraphQL = async (
+  pagination?: PaginationInput,
+  search?: string
+): Promise<QuestionConnection> => {
+  const result = await graphqlRequest<{ questions: QuestionConnection }>(
+    GET_QUESTIONS_QUERY,
+    { pagination, search }
+  );
+  return result.questions;
+};
+
+export const createQuestionGraphQL = async (
+  input: CreateQuestionInput
+): Promise<QuestionGraphQL> => {
+  const result = await graphqlRequest<{ createQuestion: QuestionGraphQL }>(
+    CREATE_QUESTION_MUTATION,
+    { input }
+  );
+  return result.createQuestion;
+};
+
+export const updateQuestionGraphQL = async (
+  id: number,
+  input: UpdateQuestionInput
+): Promise<QuestionGraphQL> => {
+  const result = await graphqlRequest<{ updateQuestion: QuestionGraphQL }>(
+    UPDATE_QUESTION_MUTATION,
+    { id, input }
+  );
+  return result.updateQuestion;
+};
+
+export const deleteQuestionGraphQL = async (id: number): Promise<void> => {
+  await graphqlRequest<{ deleteQuestion: boolean }>(DELETE_QUESTION_MUTATION, { id });
 };
