@@ -57,6 +57,7 @@ const graphqlRequest = async <T>(
 };
 
 // Helper function for multipart form data requests (for file uploads)
+// Follows GraphQL multipart request specification
 const multipartGraphQLRequest = async <T>(
   query: string,
   variables?: Record<string, unknown>,
@@ -66,11 +67,13 @@ const multipartGraphQLRequest = async <T>(
   
   const formData = new FormData();
   
-  // Add the GraphQL operation
-  formData.append('operations', JSON.stringify({
+  // Prepare operations (GraphQL query and variables with null for files)
+  const operations = {
     query,
-    variables,
-  }));
+    variables: variables || {}
+  };
+  
+  formData.append('operations', JSON.stringify(operations));
 
   // Add file map for GraphQL multipart specification
   if (files && Object.keys(files).length > 0) {
@@ -92,6 +95,9 @@ const multipartGraphQLRequest = async <T>(
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
+  
+  // Add Apollo preflight header for GraphQL multipart
+  headers["Apollo-Require-Preflight"] = "true";
 
   // Note: Don't set Content-Type for FormData, let the browser set it with boundary
 
@@ -627,9 +633,18 @@ export const getCategoriesGraphQL = async (
 export const createCategoryGraphQL = async (
   input: CreateCategoryInput
 ): Promise<CategoryGraphQL> => {
-  // Si hay un archivo, usar multipart; si no, usar JSON regular
+  // Si hay un archivo, usar multipart siguiendo el patrón del script de prueba
   if (input.image) {
-    const variables = { input };
+    // Preparar variables con image como null (será reemplazado por el mapeo)
+    const variables = { 
+      input: { 
+        name: input.name, 
+        description: input.description,
+        image: null 
+      } 
+    };
+    
+    // Mapeo de archivos siguiendo el patrón: "0": ["variables.input.image"]
     const files = { 'input.image': input.image };
     
     const result = await multipartGraphQLRequest<{ createCategory: CategoryGraphQL }>(
@@ -657,9 +672,15 @@ export const updateCategoryGraphQL = async (
   id: number,
   input: UpdateCategoryInput
 ): Promise<CategoryGraphQL> => {
-  // Si hay un archivo, usar multipart; si no, usar JSON regular
+  // Si hay un archivo, usar multipart siguiendo el patrón del script de prueba
   if (input.image) {
-    const variables = { id, input };
+    // Preparar variables con image como null (será reemplazado por el mapeo)
+    const inputForGraphQL: Record<string, unknown> = {};
+    if (input.name !== undefined) inputForGraphQL.name = input.name;
+    if (input.description !== undefined) inputForGraphQL.description = input.description;
+    inputForGraphQL.image = null;
+    
+    const variables = { id, input: inputForGraphQL };
     const files = { 'input.image': input.image };
     
     const result = await multipartGraphQLRequest<{ updateCategory: CategoryGraphQL }>(

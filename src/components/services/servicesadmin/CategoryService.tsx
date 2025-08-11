@@ -17,7 +17,8 @@ const convertGraphQLCategoryToCategory = (graphqlCategory: CategoryGraphQL): Cat
     id: graphqlCategory.id,
     name: graphqlCategory.name,
     description: graphqlCategory.description || "",
-    image: null, // GraphQL devuelve string, pero el modelo espera File|null
+    image: null, // Para el frontend, image es el archivo a subir
+    imageUrl: graphqlCategory.image, // GraphQL devuelve la URL como string
     createdAt: graphqlCategory.createdAt,
     updatedAt: graphqlCategory.updatedAt,
     subcategories: [] // Las subcategorías se cargan por separado
@@ -39,7 +40,8 @@ export const createCategory = async (category: Categorie): Promise<Categorie> =>
             id: result.id,
             name: result.name,
             description: result.description || "",
-            image: null // GraphQL devuelve string, pero el modelo espera File|null
+            image: null, // Para el frontend, image es el archivo
+            imageUrl: result.image // GraphQL devuelve la URL como string
         };
     } catch (error) {
         console.error("Error creating category:", error);
@@ -64,7 +66,8 @@ export const updateCategoryById = async (categoryId: string, category: Categorie
             id: result.id,
             name: result.name,
             description: result.description || "",
-            image: null // GraphQL devuelve string, pero el modelo espera File|null
+            image: null, // Para el frontend, image es el archivo
+            imageUrl: result.image // GraphQL devuelve la URL como string
         };
     } catch (error) {
         console.error("Error updating category:", error);

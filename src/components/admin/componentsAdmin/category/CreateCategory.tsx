@@ -84,6 +84,7 @@ const CreateCategory: FC = () => {
 
           <Table hoverable>
             <Table.Head>
+              <Table.HeadCell>Imagen</Table.HeadCell>
               <Table.HeadCell>Nombre</Table.HeadCell>
               <Table.HeadCell>Descripción</Table.HeadCell>
               <Table.HeadCell>Acciones</Table.HeadCell>
@@ -91,6 +92,19 @@ const CreateCategory: FC = () => {
             <Table.Body>
               {categories.map((category) => (
                 <Table.Row key={category.id}>
+                  <Table.Cell>
+                    {category.imageUrl ? (
+                      <img 
+                        src={category.imageUrl} 
+                        alt={category.name}
+                        className="w-12 h-12 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">Sin imagen</span>
+                      </div>
+                    )}
+                  </Table.Cell>
                   <Table.Cell>{category.name}</Table.Cell>
                   <Table.Cell>{category.description}</Table.Cell>
                   <Table.Cell>

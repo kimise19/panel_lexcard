@@ -23,6 +23,7 @@ export interface Category {
   name: string;
   description: string;
   image: File|null;
+  imageUrl?: string; // URL de la imagen desde el servidor
   createdAt?: string;
   updatedAt?: string;
   subcategories: Subcategory[];
@@ -33,6 +34,7 @@ export const InitialCategoryState: Category = {
   name: "",
   description: "",
   image:null,
+  imageUrl: "",
   createdAt: "",
   updatedAt: "",
   subcategories: []
@@ -43,10 +45,12 @@ export interface Categorie{
   name: string,
   description: string,
   image: File|null,
+  imageUrl?: string, // URL de la imagen desde el servidor
 }
 export const InitialCategoryStateCategory: Categorie = {
   id: 0,
   name: "",
   description: "",
   image: null,
+  imageUrl: "",
 };
