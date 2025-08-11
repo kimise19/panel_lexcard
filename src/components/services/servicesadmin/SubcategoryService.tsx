@@ -3,13 +3,15 @@ import {
   createSubcategoryGraphQL, 
   updateSubcategoryGraphQL, 
   deleteSubcategoryGraphQL,
-  getSubcategoriesGraphQL,
+  getSubcategoriesGraphQL
+} from '../GraphQLService';
+import {
   CreateSubcategoryInput,
   UpdateSubcategoryInput,
   SubcategoryConnection,
   SubcategoryGraphQL,
   PaginationInput
-} from '../GraphQLService';
+} from '../types';
 
 // Función para convertir SubcategoryGraphQL a Subcategory para el admin
 const convertGraphQLSubcategoryToSubcategory = (graphqlSubcategory: SubcategoryGraphQL): Subcategory => {

@@ -3,13 +3,16 @@ import {
   createCategoryGraphQL, 
   updateCategoryGraphQL, 
   deleteCategoryGraphQL,
-  getCategoriesGraphQL,
+  getCategoriesGraphQL
+} from '../GraphQLService';
+import {
   CreateCategoryInput,
   UpdateCategoryInput,
   CategoryConnection,
   CategoryGraphQL,
-  PaginationInput
-} from '../GraphQLService';
+  PaginationInput,
+  CategoryEdge
+} from '../types';
 
 // Función para convertir CategoryGraphQL a Category para el admin
 const convertGraphQLCategoryToCategory = (graphqlCategory: CategoryGraphQL): Category => {
@@ -101,7 +104,7 @@ export const allCategory = async (
 
         const result: CategoryConnection = await getCategoriesGraphQL(pagination, search);
         
-        const categories = result.edges.map(edge => convertGraphQLCategoryToCategory(edge.node));
+        const categories = result.edges.map((edge: CategoryEdge) => convertGraphQLCategoryToCategory(edge.node));
         
         // Calcular total de páginas basado en totalCount y pageSize
         const totalPages = Math.ceil(result.totalCount / pageSize);

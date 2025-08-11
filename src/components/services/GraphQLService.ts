@@ -1,5 +1,56 @@
 // GraphQL client service for authentication and user management
 import { getStorageItem } from "../utils/StorageUtils";
+import {
+  // Auth schemas
+  LOGIN_MUTATION,
+  REGISTER_MUTATION,
+  GET_PROFILE_QUERY,
+  RESET_PASSWORD_MUTATION,
+  CHANGE_PASSWORD_MUTATION,
+  CHANGE_PASSWORD_WITH_TOKEN_MUTATION,
+  VERIFY_EMAIL_MUTATION,
+  LOGOUT_MUTATION,
+  // Category schemas
+  GET_CATEGORIES_QUERY,
+  CREATE_CATEGORY_MUTATION,
+  UPDATE_CATEGORY_MUTATION,
+  DELETE_CATEGORY_MUTATION,
+  // Subcategory schemas
+  GET_SUBCATEGORIES_QUERY,
+  CREATE_SUBCATEGORY_MUTATION,
+  UPDATE_SUBCATEGORY_MUTATION,
+  DELETE_SUBCATEGORY_MUTATION,
+  // Question schemas
+  GET_QUESTIONS_QUERY,
+  CREATE_QUESTION_MUTATION,
+  UPDATE_QUESTION_MUTATION,
+  DELETE_QUESTION_MUTATION
+} from './schemas';
+import {
+  // Auth types
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+  AuthPayload,
+  Profile,
+  // Common types
+  PaginationInput,
+  // Category types
+  CategoryGraphQL,
+  CategoryConnection,
+  CreateCategoryInput,
+  UpdateCategoryInput,
+  // Subcategory types
+  SubcategoryGraphQL,
+  SubcategoryConnection,
+  CreateSubcategoryInput,
+  UpdateSubcategoryInput,
+  // Question types
+  QuestionGraphQL,
+  QuestionConnection,
+  CreateQuestionInput,
+  UpdateQuestionInput
+} from './types';
 
 // Get base URL from environment variables
 const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL;
@@ -125,114 +176,6 @@ const multipartGraphQLRequest = async <T>(
   return result.data;
 };
 
-// GraphQL Mutations and Queries
-const LOGIN_MUTATION = `
-  mutation Login($input: LoginInput!) {
-    login(input: $input) {
-      access_token
-      user {
-        id
-        displayName
-        email
-        roles
-        verified
-      }
-    }
-  }
-`;
-
-const REGISTER_MUTATION = `
-  mutation Register($input: RegisterInput!) {
-    register(input: $input) {
-      access_token
-      user {
-        id
-        displayName
-        email
-        roles
-        verified
-      }
-    }
-  }
-`;
-
-const GET_PROFILE_QUERY = `
-  query GetProfile {
-    me {
-      id
-      displayName
-      email
-      roles
-      verified
-    }
-  }
-`;
-
-const RESET_PASSWORD_MUTATION = `
-  mutation ResetPassword($input: ResetPasswordInput!) {
-    resetPassword(input: $input)
-  }
-`;
-
-const CHANGE_PASSWORD_MUTATION = `
-  mutation ChangePassword($newPassword: String!) {
-    changePassword(newPassword: $newPassword)
-  }
-`;
-
-const CHANGE_PASSWORD_WITH_TOKEN_MUTATION = `
-  mutation ChangePasswordWithToken($token: String!, $newPassword: String!) {
-    changePasswordWithToken(token: $token, newPassword: $newPassword)
-  }
-`;
-
-const VERIFY_EMAIL_MUTATION = `
-  mutation VerifyEmail($token: String!) {
-    verifyEmail(token: $token)
-  }
-`;
-
-const LOGOUT_MUTATION = `
-  mutation Logout {
-    logout
-  }
-`;
-
-// Types based on GraphQL schema
-export interface LoginInput {
-  email: string;
-  password: string;
-}
-
-export interface RegisterInput {
-  displayName: string;
-  email: string;
-  password: string;
-}
-
-export interface ResetPasswordInput {
-  email: string;
-}
-
-export interface AuthPayload {
-  access_token: string;
-  user: {
-    id: number;
-    displayName: string;
-    email: string;
-    roles: string[];
-    verified: boolean;
-  };
-}
-
-export interface Profile {
-  id: number;
-  displayName: string;
-  email: string;
-  roles: string[];
-  verified: boolean;
-}
-
 // Service functions
 export const loginGraphQL = async (email: string, password: string): Promise<AuthPayload> => {
   const input: LoginInput = { email, password };
@@ -276,347 +219,6 @@ export const changePasswordWithTokenGraphQL = async (
 export const verifyEmailGraphQL = async (token: string): Promise<void> => {
   await graphqlRequest<{ verifyEmail: boolean }>(VERIFY_EMAIL_MUTATION, { token });
 };
-
-// Category Management GraphQL Operations
-const GET_CATEGORIES_QUERY = `
-  query GetCategories($pagination: PaginationInput, $search: String) {
-    categories(pagination: $pagination, search: $search) {
-      edges {
-        node {
-          id
-          name
-          description
-          image
-          createdAt
-          updatedAt
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-      totalCount
-    }
-  }
-`;
-
-const CREATE_CATEGORY_MUTATION = `
-  mutation CreateCategory($input: CreateCategoryInput!) {
-    createCategory(input: $input) {
-      id
-      name
-      description
-      image
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const UPDATE_CATEGORY_MUTATION = `
-  mutation UpdateCategory($id: Int!, $input: UpdateCategoryInput!) {
-    updateCategory(id: $id, input: $input) {
-      id
-      name
-      description
-      image
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const DELETE_CATEGORY_MUTATION = `
-  mutation DeleteCategory($id: Int!) {
-    deleteCategory(id: $id)
-  }
-`;
-
-// Subcategory Management GraphQL Operations
-const GET_SUBCATEGORIES_QUERY = `
-  query GetSubcategories($pagination: PaginationInput, $search: String) {
-    subcategories(pagination: $pagination, search: $search) {
-      edges {
-        node {
-          id
-          name
-          description
-          categoryId
-          createdAt
-          updatedAt
-          category {
-            id
-            name
-            description
-            image
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-      totalCount
-    }
-  }
-`;
-
-const CREATE_SUBCATEGORY_MUTATION = `
-  mutation CreateSubcategory($input: CreateSubcategoryInput!) {
-    createSubcategory(input: $input) {
-      id
-      name
-      description
-      categoryId
-      createdAt
-      updatedAt
-      category {
-        id
-        name
-        description
-        image
-      }
-    }
-  }
-`;
-
-const UPDATE_SUBCATEGORY_MUTATION = `
-  mutation UpdateSubcategory($id: Int!, $input: UpdateSubcategoryInput!) {
-    updateSubcategory(id: $id, input: $input) {
-      id
-      name
-      description
-      categoryId
-      createdAt
-      updatedAt
-      category {
-        id
-        name
-        description
-        image
-      }
-    }
-  }
-`;
-
-const DELETE_SUBCATEGORY_MUTATION = `
-  mutation DeleteSubcategory($id: Int!) {
-    deleteSubcategory(id: $id)
-  }
-`;
-
-// Question Management GraphQL Operations
-const GET_QUESTIONS_QUERY = `
-  query GetQuestions($pagination: PaginationInput, $search: String) {
-    questions(pagination: $pagination, search: $search) {
-      edges {
-        node {
-          id
-          question
-          options
-          answers
-          correct
-          justification
-          score
-          type
-          testId
-          createdAt
-          updatedAt
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-      totalCount
-    }
-  }
-`;
-
-const CREATE_QUESTION_MUTATION = `
-  mutation CreateQuestion($input: CreateQuestionInput!) {
-    createQuestion(input: $input) {
-      id
-      question
-      options
-      answers
-      correct
-      justification
-      score
-      type
-      testId
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const UPDATE_QUESTION_MUTATION = `
-  mutation UpdateQuestion($id: Int!, $input: UpdateQuestionInput!) {
-    updateQuestion(id: $id, input: $input) {
-      id
-      question
-      options
-      answers
-      correct
-      justification
-      score
-      type
-      testId
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const DELETE_QUESTION_MUTATION = `
-  mutation DeleteQuestion($id: Int!) {
-    deleteQuestion(id: $id)
-  }
-`;
-
-// Category Types
-export interface PaginationInput {
-  first?: number;
-  after?: string;
-  last?: number;
-  before?: string;
-}
-
-export interface CategoryGraphQL {
-  id: number;
-  name: string;
-  description?: string;
-  image?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CategoryEdge {
-  node: CategoryGraphQL;
-}
-
-export interface PageInfo {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor?: string;
-  endCursor?: string;
-}
-
-export interface CategoryConnection {
-  edges: CategoryEdge[];
-  pageInfo: PageInfo;
-  totalCount: number;
-}
-
-export interface CreateCategoryInput {
-  name: string;
-  description?: string;
-  image?: File;
-}
-
-export interface UpdateCategoryInput {
-  name?: string;
-  description?: string;
-  image?: File;
-}
-
-// Subcategory Types
-export interface SubcategoryGraphQL {
-  id: number;
-  name: string;
-  description?: string;
-  categoryId: number;
-  createdAt: string;
-  updatedAt: string;
-  category: {
-    id: number;
-    name: string;
-    description?: string;
-    image?: string;
-  };
-}
-
-export interface SubcategoryEdge {
-  node: SubcategoryGraphQL;
-}
-
-export interface SubcategoryConnection {
-  edges: SubcategoryEdge[];
-  pageInfo: PageInfo;
-  totalCount: number;
-}
-
-export interface CreateSubcategoryInput {
-  name: string;
-  description?: string;
-  categoryId: number;
-}
-
-export interface UpdateSubcategoryInput {
-  name?: string;
-  description?: string;
-  categoryId?: number;
-}
-
-// Question Types
-export enum QuestionType {
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
-  TRUE_FALSE = 'TRUE_FALSE',
-  SINGLE_CHOICE = 'SINGLE_CHOICE'
-}
-
-export interface QuestionGraphQL {
-  id: number;
-  question: string;
-  options: string[];
-  answers: string[];
-  correct: string[];
-  justification: string;
-  score: number;
-  type: QuestionType;
-  testId: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface QuestionEdge {
-  node: QuestionGraphQL;
-}
-
-export interface QuestionConnection {
-  edges: QuestionEdge[];
-  pageInfo: PageInfo;
-  totalCount: number;
-}
-
-export interface CreateQuestionInput {
-  question: string;
-  options: string[];
-  answers: string[];
-  correct: string[];
-  justification: string;
-  score: number;
-  type: QuestionType;
-  testId: number;
-}
-
-export interface UpdateQuestionInput {
-  question?: string;
-  options?: string[];
-  answers?: string[];
-  correct?: string[];
-  justification?: string;
-  score?: number;
-  type?: QuestionType;
-  testId?: number;
-}
 
 // Category Service Functions
 export const getCategoriesGraphQL = async (

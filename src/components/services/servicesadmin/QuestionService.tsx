@@ -3,14 +3,16 @@ import {
   createQuestionGraphQL, 
   updateQuestionGraphQL, 
   deleteQuestionGraphQL,
-  getQuestionsGraphQL,
+  getQuestionsGraphQL
+} from '../GraphQLService';
+import {
   CreateQuestionInput,
   UpdateQuestionInput,
   QuestionConnection,
   QuestionGraphQL,
   PaginationInput,
   QuestionType
-} from '../GraphQLService';
+} from '../types';
 
 // Función para convertir QuestionGraphQL a APIQuestion para el admin
 const convertGraphQLQuestionToAPIQuestion = (graphqlQuestion: QuestionGraphQL): APIQuestion => {
