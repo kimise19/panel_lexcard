@@ -14,7 +14,6 @@ export interface QuestionGraphQL {
   answers: string[];
   correct: string[];
   justification: string;
-  score: number;
   type: QuestionType;
   testId: number;
   createdAt: string;
@@ -37,7 +36,6 @@ export interface CreateQuestionInput {
   answers: string[];
   correct: string[];
   justification: string;
-  score: number;
   type: QuestionType;
   testId: number;
 }
@@ -48,7 +46,6 @@ export interface UpdateQuestionInput {
   answers?: string[];
   correct?: string[];
   justification?: string;
-  score?: number;
   type?: QuestionType;
   testId?: number;
 }

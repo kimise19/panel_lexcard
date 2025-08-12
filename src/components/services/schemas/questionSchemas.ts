@@ -11,7 +11,6 @@ export const GET_QUESTIONS_QUERY = `
           answers
           correct
           justification
-          score
           type
           testId
           createdAt
@@ -38,7 +37,6 @@ export const CREATE_QUESTION_MUTATION = `
       answers
       correct
       justification
-      score
       type
       testId
       createdAt
@@ -56,7 +54,6 @@ export const UPDATE_QUESTION_MUTATION = `
       answers
       correct
       justification
-      score
       type
       testId
       createdAt

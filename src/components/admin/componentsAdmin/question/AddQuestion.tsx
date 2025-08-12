@@ -146,21 +146,6 @@ const AddQuestionModal: FC<AddQuestionModalProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="score" value="Puntuación" />
-              <TextInput
-                id="score"
-                type="number"
-                placeholder="Puntuación"
-                value={newQuestion.score.toString()}
-                onChange={(e) =>
-                  setNewQuestion({
-                    ...newQuestion,
-                    score: parseInt(e.target.value, 10),
-                  })
-                }
-              />
-            </div>
-            <div>
               <Label htmlFor="testId" value="ID del Test" />
               <Select
                 id="testId"

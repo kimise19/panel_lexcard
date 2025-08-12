@@ -47,14 +47,14 @@ const QuestionComponent: FC = () => {
     <>
       <div className="mx-4 mt-4">
         <Breadcrumb>
-          <Breadcrumb.Item icon={HiArchive}>Casos</Breadcrumb.Item>
-          <Breadcrumb.Item>Test</Breadcrumb.Item>
+          <Breadcrumb.Item icon={HiArchive}>Agregar preguntas</Breadcrumb.Item>
+          <Breadcrumb.Item>Preguntas</Breadcrumb.Item>
         </Breadcrumb>
       </div>
       <div className="flex flex-col mx-4 mt-4 space-y-4">
         <div className="w-full flex justify-between items-center">
           <TextInput 
-            placeholder="Buscar categoría..." 
+            placeholder="Buscar preguntas" 
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
           />
@@ -62,7 +62,7 @@ const QuestionComponent: FC = () => {
           size="mc"
           onClick={() => setIsAddModalOpen(true)}>
             <HiPlus className="mr-2 self-center" />
-            Agregar Test
+            Agregar Preguntas
           </Button>
         </div>
 
@@ -78,7 +78,6 @@ const QuestionComponent: FC = () => {
             <Table.Head>
               <Table.HeadCell>Pregunta</Table.HeadCell>
               <Table.HeadCell>Índice Correcto</Table.HeadCell>
-              <Table.HeadCell>Puntuación</Table.HeadCell>
               <Table.HeadCell>Justificación</Table.HeadCell>
               <Table.HeadCell>Nombre del Test</Table.HeadCell>
               <Table.HeadCell>Acciones</Table.HeadCell>
@@ -88,7 +87,6 @@ const QuestionComponent: FC = () => {
                 <Table.Row key={question.id}>
                   <Table.Cell>{question.question}</Table.Cell>
                   <Table.Cell>{question.correct}</Table.Cell>
-                  <Table.Cell>{question.score}</Table.Cell>
                   <Table.Cell>{question.justification}</Table.Cell>
                   <Table.Cell>{question.test.name}</Table.Cell>
                   <Table.Cell>

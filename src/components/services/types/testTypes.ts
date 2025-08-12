@@ -1,5 +1,5 @@
-import { CommonTypes, PageInfo } from './commonTypes';
-import { Subcategory } from './subcategoryTypes';
+import { PageInfo } from './commonTypes';
+import { SubcategoryGraphQL } from './subcategoryTypes';
 
 // Types based on GraphQL schema for Test
 export interface Test {
@@ -7,7 +7,7 @@ export interface Test {
   name: string;
   description?: string;
   subcategoryId: number;
-  subcategory: Subcategory;
+  subcategory: SubcategoryGraphQL;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,16 +33,4 @@ export interface UpdateTestInput {
   name?: string;
   description?: string;
   subcategoryId?: number;
-}
-
-export interface TestsResponse extends CommonTypes {
-  items: Test[];
-}
-
-export interface TestResponse extends CommonTypes {
-  item: Test;
-}
-
-export interface DeleteTestResponse extends CommonTypes {
-  success: boolean;
 }

@@ -1,7 +1,7 @@
 import { Alert, Button, Label, Modal, TextInput, Select } from "flowbite-react";
 import { FC, useState, useEffect } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
-import { Test } from "../../../models/modelsadmin/Tets";
+import { Test } from "../../../services/types";
 import { APIQuestion } from "../../../models/modelsadmin/Question";
 import { updateQuestionById } from "../../../services/servicesadmin/QuestionService";
 import { allTest } from "../../../services/servicesadmin/TestService";
@@ -29,13 +29,13 @@ const EditQuestionModal: FC<EditQuestionModalProps> = ({
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await allTest();
-        setTests(response.items);
+        const testsData = await allTest();
+        setTests(testsData);
       } catch (error) {
         if (error instanceof Error) {
           setErrorMessage(error.message);
         } else {
-          setErrorMessage("Error al obtener las categorías");
+          setErrorMessage("Error al obtener los tests");
         }
       }
     };
@@ -141,21 +141,6 @@ const EditQuestionModal: FC<EditQuestionModalProps> = ({
                   setSelectedQuestion({
                     ...selectedQuestion,
                     justification: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="score" value="Puntuación" />
-              <TextInput
-                id="score"
-                type="number"
-                placeholder="Puntuación"
-                value={selectedQuestion?.score?.toString() || ""}
-                onChange={(e) =>
-                  setSelectedQuestion({
-                    ...selectedQuestion,
-                    score: parseInt(e.target.value, 10),
                   })
                 }
               />

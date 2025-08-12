@@ -32,7 +32,6 @@ const convertGraphQLQuestionToAPIQuestion = (graphqlQuestion: QuestionGraphQL): 
     answers: graphqlQuestion.answers,
     correct: correctIndex,
     justification: graphqlQuestion.justification,
-    score: graphqlQuestion.score,
     createdAt: graphqlQuestion.createdAt,
     updatedAt: graphqlQuestion.updatedAt,
     testId: graphqlQuestion.testId,
@@ -68,7 +67,6 @@ const convertAPIQuestionToCreateInput = (apiQuestion: APIQuestion): CreateQuesti
     answers,
     correct: correctOptions,
     justification: apiQuestion.justification,
-    score: apiQuestion.score,
     testId: apiQuestion.testId,
     type: QuestionType.MULTIPLE_CHOICE // Default type, puede ser configurado
   };
@@ -131,7 +129,6 @@ export const updateQuestionById = async (questionId: string, question: APIQuesti
                 [question.options[question.correct]] : 
                 [],
             justification: question.justification,
-            score: question.score,
             testId: question.testId,
             type: QuestionType.MULTIPLE_CHOICE
         };

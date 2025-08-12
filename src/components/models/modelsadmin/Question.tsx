@@ -14,7 +14,6 @@ export interface APIQuestion {
   answers: string | string[];
   correct: number;
   justification: string;
-  score: number;
   createdAt: string;
   updatedAt: string;
   testId: number;
@@ -27,7 +26,6 @@ export const InitialQuestionStateQuestion: APIQuestion = {
   answers: [],
   correct: 0,
   justification: "",
-  score: 0,
   createdAt: "",
   updatedAt: "",
   testId: 0,
