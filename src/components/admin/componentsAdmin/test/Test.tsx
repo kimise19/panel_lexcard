@@ -1,7 +1,7 @@
 import { Breadcrumb, TextInput, Button, Table, Pagination, Select } from "flowbite-react";
 import { FC, useEffect, useState, useCallback } from "react";
 import { HiArchive, HiPencil, HiPlus, HiTrash } from "react-icons/hi";
-import { Test } from "../../../models/modelsadmin/Tets"; 
+import { Test } from "../../../services/types";
 import AddTestModal from "./AddTest";
 import EditTestModal from "./EditTest";
 import DeleteTestModal from "./DeleteTest";
@@ -21,17 +21,17 @@ const TestComponent: FC = () => {
 
   const fetchTest = useCallback(async () => {
     try {
-      const response = await allTest(pageNumber, pageSize, searchTerm, orderBy, orderDirection);
-      const testWithCategoryNames = response.items.map(test => ({
+      const testsData = await allTest();
+      const testWithCategoryNames = testsData.map(test => ({
         ...test,
         subcategoryName: test.subcategory ? test.subcategory.name : "N/A",
       }));
       setTests(testWithCategoryNames);
-      setTotalPages(response.totalPages);
+      setTotalPages(Math.ceil(testsData.length / pageSize));
     } catch (error) {
       console.error(error);
     }
-  }, [pageNumber, pageSize, searchTerm, orderBy, orderDirection]);
+  }, [pageSize]);
 
   useEffect(() => {
     fetchTest();
@@ -125,7 +125,7 @@ const TestComponent: FC = () => {
       <AddTestModal
         isAddModalOpen={isAddModalOpen}
         setIsAddModalOpen={setIsAddModalOpen}
-        refreshCategories={fetchTest}
+        refreshTests={fetchTest}
       />
       {selectedTest && (
         <EditTestModal

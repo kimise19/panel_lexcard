@@ -14,3 +14,6 @@ export * from './subcategoryTypes';
 
 // Question types
 export * from './questionTypes';
+
+// Test types
+export * from './testTypes';

@@ -1,8 +1,8 @@
 import { Alert, Button, Label, Modal, TextInput, Select } from "flowbite-react";
 import { FC, useState, useEffect } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
-import { Subcategory} from "../../../models/Category";
-import { Test} from "../../../models/modelsadmin/Tets";
+import { Test, UpdateTestInput } from "../../../services/types";
+import { Subcategory } from "../../../models/modelsadmin/Category";
 import { updateTestById } from "../../../services/servicesadmin/TestService";
 import { allSubcategory } from "../../../services/servicesadmin/SubcategoryService";
 import CustomModal from "../../../utils/CustomModal";
@@ -11,7 +11,7 @@ interface EditTestModalProps {
   isEditModalOpen: boolean;
   setIsEditModalOpen: (isOpen: boolean) => void;
   selectedTest: Test;
-  setSelectedTest: (subcategory: Test) => void;
+  setSelectedTest: (test: Test) => void;
   refreshTest: () => void;
 }
 
@@ -27,7 +27,7 @@ const EditTestModal: FC<EditTestModalProps> = ({
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchSubcategories = async () => {
       try {
         const response = await allSubcategory();
         setSubcategories(response.items);
@@ -35,22 +35,26 @@ const EditTestModal: FC<EditTestModalProps> = ({
         if (error instanceof Error) {
           setErrorMessage(error.message);
         } else {
-          setErrorMessage("Error al obtener las categorías");
+          setErrorMessage("Error al obtener las subcategorías");
         }
       }
     };
 
-    fetchCategories();
+    fetchSubcategories();
   }, []);
 
-  const handleUpdateCategory = async () => {
+  const handleUpdateTest = async () => {
     try {
-      const updatedTest = await updateTestById(
-        String(selectedTest.id),
-        selectedTest
-      );
+      const updateInput: UpdateTestInput = {
+        id: selectedTest.id,
+        name: selectedTest.name,
+        description: selectedTest.description,
+        subcategoryId: selectedTest.subcategoryId,
+      };
+
+      const updatedTest = await updateTestById(updateInput);
       setSelectedTest(updatedTest);
-      setSuccessMessage("Categoría actualizada correctamente");
+      setSuccessMessage("Test actualizado correctamente");
       setIsEditModalOpen(false);
       setErrorMessage(null);
       refreshTest();
@@ -71,19 +75,19 @@ const EditTestModal: FC<EditTestModalProps> = ({
   return (
     <>
       <Modal show={isEditModalOpen} onClose={handleCloseModal} dismissible>
-        <Modal.Header>Editar Categoría</Modal.Header>
+        <Modal.Header>Editar Test</Modal.Header>
         <Modal.Body>
           <form className="grid grid-cols-1 gap-4">
             <div>
               <Label htmlFor="name" value="Nombre" />
               <TextInput
                 id="name"
-                placeholder="Nombre de la categoría"
+                placeholder="Nombre del test"
                 value={selectedTest?.name || ""}
                 onChange={(e) =>
                   setSelectedTest({
                     ...selectedTest,
-                    name: e.target.value || "",
+                    name: e.target.value,
                   })
                 }
               />
@@ -92,29 +96,29 @@ const EditTestModal: FC<EditTestModalProps> = ({
               <Label htmlFor="description" value="Descripción" />
               <TextInput
                 id="description"
-                placeholder="Descripción de la categoría"
+                placeholder="Descripción del test"
                 value={selectedTest?.description || ""}
                 onChange={(e) =>
                   setSelectedTest({
                     ...selectedTest,
-                    description: e.target.value || "",
+                    description: e.target.value,
                   })
                 }
               />
             </div>
             <div>
-              <Label htmlFor="category" value="Categoría" />
+              <Label htmlFor="subcategory" value="Subcategoría" />
               <Select
-                id="category"
+                id="subcategory"
                 value={selectedTest?.subcategoryId || ""}
                 onChange={(e) =>
                   setSelectedTest({
                     ...selectedTest,
-                    subcategoryId: Number(e.target.value), // Convertir a número
+                    subcategoryId: Number(e.target.value),
                   })
                 }
               >
-                <option value="">Seleccione una categoría</option>
+                <option value="">Seleccione una subcategoría</option>
                 {subcategories.map((subcategory) => (
                   <option key={subcategory.id} value={subcategory.id}>
                     {subcategory.name}
@@ -137,7 +141,7 @@ const EditTestModal: FC<EditTestModalProps> = ({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button color="success" onClick={handleUpdateCategory}>
+          <Button color="success" onClick={handleUpdateTest}>
             Actualizar
           </Button>
           <Button color="failure" onClick={handleCloseModal}>

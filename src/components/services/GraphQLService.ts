@@ -24,7 +24,13 @@ import {
   GET_QUESTIONS_QUERY,
   CREATE_QUESTION_MUTATION,
   UPDATE_QUESTION_MUTATION,
-  DELETE_QUESTION_MUTATION
+  DELETE_QUESTION_MUTATION,
+  // Test schemas
+  GET_ALL_TESTS,
+  GET_TEST_BY_ID,
+  CREATE_TEST,
+  UPDATE_TEST,
+  DELETE_TEST
 } from './schemas';
 import {
   // Auth types
@@ -49,7 +55,12 @@ import {
   QuestionGraphQL,
   QuestionConnection,
   CreateQuestionInput,
-  UpdateQuestionInput
+  UpdateQuestionInput,
+  // Test types
+  Test,
+  TestConnection,
+  CreateTestInput,
+  UpdateTestInput
 } from './types';
 
 // Get base URL from environment variables
@@ -381,4 +392,36 @@ export const updateQuestionGraphQL = async (
 
 export const deleteQuestionGraphQL = async (id: number): Promise<void> => {
   await graphqlRequest<{ deleteQuestion: boolean }>(DELETE_QUESTION_MUTATION, { id });
+};
+
+// Test operations
+export const getTestsGraphQL = async (
+  pagination?: PaginationInput,
+  search?: string
+): Promise<TestConnection> => {
+  const result = await graphqlRequest<{ tests: TestConnection }>(
+    GET_ALL_TESTS,
+    { pagination, search }
+  );
+  return result.tests;
+};
+
+export const getTestByIdGraphQL = async (id: number): Promise<Test> => {
+  const result = await graphqlRequest<{ test: Test }>(GET_TEST_BY_ID, { id });
+  return result.test;
+};
+
+export const createTestGraphQL = async (input: CreateTestInput): Promise<Test> => {
+  const result = await graphqlRequest<{ createTest: Test }>(CREATE_TEST, { input });
+  return result.createTest;
+};
+
+export const updateTestGraphQL = async (input: UpdateTestInput): Promise<Test> => {
+  const result = await graphqlRequest<{ updateTest: Test }>(UPDATE_TEST, { input });
+  return result.updateTest;
+};
+
+export const deleteTestGraphQL = async (id: number): Promise<boolean> => {
+  const result = await graphqlRequest<{ deleteTest: boolean }>(DELETE_TEST, { id });
+  return result.deleteTest;
 };

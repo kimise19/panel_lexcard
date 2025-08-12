@@ -11,3 +11,6 @@ export * from './subcategorySchemas';
 
 // Question schemas
 export * from './questionSchemas';
+
+// Test schemas
+export * from './testSchemas';

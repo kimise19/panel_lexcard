@@ -8,53 +8,59 @@ import {
 } from "flowbite-react";
 import { FC, useState, useEffect } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
-import {Subcategory} from "../../../models/Category";
-import{Test,InitialTestStateTest} from "../../../models/modelsadmin/Tets";
+import { Subcategory } from "../../../models/modelsadmin/Category";
+import { CreateTestInput } from "../../../services/types";
 
 import { createTest } from "../../../services/servicesadmin/TestService";
 import { allSubcategory } from "../../../services/servicesadmin/SubcategoryService";
 import CustomModal from "../../../utils/CustomModal";
 
-interface AddCategoryModalProps {
+interface AddTestModalProps {
   isAddModalOpen: boolean;
   setIsAddModalOpen: (isOpen: boolean) => void;
-  refreshCategories: () => void;
+  refreshTests: () => void;
 }
 
-const AddTestModal: FC<AddCategoryModalProps> = ({
+const AddTestModal: FC<AddTestModalProps> = ({
   isAddModalOpen,
   setIsAddModalOpen,
-  refreshCategories,
+  refreshTests,
 }) => {
-  const [newTest, setNewTest] = useState<Test>(
-    InitialTestStateTest
-  );
-  const [categories, setCategories] = useState<Subcategory[]>([]);
+  const [newTest, setNewTest] = useState<CreateTestInput>({
+    name: "",
+    description: "",
+    subcategoryId: 0,
+  });
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchSubcategories = async () => {
       try {
         const response = await allSubcategory();
-        setCategories(response.items); // Extraer la propiedad items
+        setSubcategories(response.items);
       } catch {
-        setErrorMessage("Error al obtener las categorías");
+        setErrorMessage("Error al obtener las subcategorías");
       }
     };
 
-    fetchCategories();
+    fetchSubcategories();
   }, []);
 
-  const handleAddCategory = async () => {
+  const handleAddTest = async () => {
     try {
-      console.log("New Test:", newTest); // Verificar el valor de newCategory
+      console.log("New Test:", newTest);
       await createTest(newTest);
-      setSuccessMessage("Categoría agregada correctamente");
+      setSuccessMessage("Test agregado correctamente");
       setIsAddModalOpen(false);
       setErrorMessage(null);
-      refreshCategories();
-      setNewTest(InitialTestStateTest);
+      refreshTests();
+      setNewTest({
+        name: "",
+        description: "",
+        subcategoryId: 0,
+      });
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
@@ -67,7 +73,11 @@ const AddTestModal: FC<AddCategoryModalProps> = ({
   const handleCloseModal = () => {
     setIsAddModalOpen(false);
     setErrorMessage(null);
-    setNewTest(InitialTestStateTest);
+    setNewTest({
+      name: "",
+      description: "",
+      subcategoryId: 0,
+    });
   };
 
   return (
@@ -102,21 +112,21 @@ const AddTestModal: FC<AddCategoryModalProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="category" value="Categoría" />
+              <Label htmlFor="subcategory" value="Subcategoría" />
               <Select
-                id="category"
+                id="subcategory"
                 value={newTest.subcategoryId}
                 onChange={(e) =>
                   setNewTest({
                     ...newTest,
-                    subcategoryId: Number(e.target.value), // Convertir a número
+                    subcategoryId: Number(e.target.value),
                   })
                 }
               >
                 <option value="">Seleccione una Subcategoría</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
+                {subcategories.map((subcategory) => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
                   </option>
                 ))}
               </Select>
@@ -136,7 +146,7 @@ const AddTestModal: FC<AddCategoryModalProps> = ({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button color="success" onClick={handleAddCategory}>
+          <Button color="success" onClick={handleAddTest}>
             Agregar
           </Button>
           <Button color="failure" onClick={handleCloseModal}>

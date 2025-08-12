@@ -1,8 +1,8 @@
 import { Alert, Button, Modal } from "flowbite-react";
 import { FC, useState } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
-import {Test} from "../../../models/modelsadmin/Tets"; 
-import {  deleteTestById } from "../../../services/servicesadmin/TestService";
+import { Test } from "../../../services/types";
+import { deleteTestById } from "../../../services/servicesadmin/TestService";
 import CustomModal from "../../../utils/CustomModal";
 
 interface DeleteTestModalProps {
@@ -23,8 +23,8 @@ const DeleteTestModal: FC<DeleteTestModalProps> = ({
 
   const handleDelete = async () => {
     try {
-      await  deleteTestById(String(selectedTest.id));
-      setSuccessMessage("Test eliminada correctamente");
+      await deleteTestById(selectedTest.id);
+      setSuccessMessage("Test eliminado correctamente");
       setIsDeleteModalOpen(false);
       setErrorMessage(null);
       refreshTest();

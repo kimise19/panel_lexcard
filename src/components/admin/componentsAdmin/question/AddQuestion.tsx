@@ -8,7 +8,7 @@ import {
 } from "flowbite-react";
 import { FC, useState, useEffect } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
-import { Test } from "../../../models/modelsadmin/Tets";
+import { Test } from "../../../services/types";
 import { APIQuestion, InitialQuestionStateQuestion } from "../../../models/modelsadmin/Question";
 
 import { createQuestion } from "../../../services/servicesadmin/QuestionService";
@@ -36,10 +36,11 @@ const AddQuestionModal: FC<AddQuestionModalProps> = ({
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await allTest();
-        setTests(response.items); // Extraer la propiedad items
-      } catch {
-        setErrorMessage("Error al obtener las categorías");
+        const testsData = await allTest();
+        setTests(testsData);
+      } catch (error) {
+        console.error("Error fetching tests:", error);
+        setErrorMessage("Error al obtener los tests");
       }
     };
 
