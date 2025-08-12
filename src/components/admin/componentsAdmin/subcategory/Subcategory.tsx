@@ -113,23 +113,45 @@ const SubcategoryComponent: FC = () => {
               <Table.HeadCell>Acciones</Table.HeadCell>
             </Table.Head>
             <Table.Body>
-              {subcategories.map((subcategory) => (
-                <Table.Row key={subcategory.id}>
-                  <Table.Cell>{subcategory.name}</Table.Cell>
-                  <Table.Cell>{subcategory.description}</Table.Cell>
-                  <Table.Cell>{subcategory.categoryName}</Table.Cell>
-                  <Table.Cell>
-                    <div className="flex space-x-2">
-                      <Button color="success" onClick={() => handleEditSubcategory(subcategory)}>
-                        <HiPencil />
-                      </Button>
-                      <Button color="failure" onClick={() => handleDeleteSubcategory(subcategory)}>
-                        <HiTrash />
-                      </Button>
-                    </div>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+              {subcategories.length === 0 ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <Table.Row key={`skeleton-${idx}`}>
+                    <Table.Cell>
+                      <div className="h-4 w-36 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="h-4 w-52 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="h-4 w-44 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="flex space-x-2">
+                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              ) : (
+                subcategories.map((subcategory) => (
+                  <Table.Row key={subcategory.id}>
+                    <Table.Cell>{subcategory.name}</Table.Cell>
+                    <Table.Cell>{subcategory.description}</Table.Cell>
+                    <Table.Cell>{subcategory.categoryName}</Table.Cell>
+                    <Table.Cell>
+                      <div className="flex space-x-2">
+                        <Button color="success" onClick={() => handleEditSubcategory(subcategory)}>
+                          <HiPencil />
+                        </Button>
+                        <Button color="failure" onClick={() => handleDeleteSubcategory(subcategory)}>
+                          <HiTrash />
+                        </Button>
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              )}
             </Table.Body>
           </Table>
           <div className="flex justify-center mt-4">

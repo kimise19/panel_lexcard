@@ -90,35 +90,57 @@ const CreateCategory: FC = () => {
               <Table.HeadCell>Acciones</Table.HeadCell>
             </Table.Head>
             <Table.Body>
-              {categories.map((category) => (
-                <Table.Row key={category.id}>
-                  <Table.Cell>
-                    {category.imageUrl ? (
-                      <img 
-                        src={category.imageUrl} 
-                        alt={category.name}
-                        className="w-12 h-12 object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <span className="text-gray-400 text-xs">Sin imagen</span>
+              {categories.length === 0 ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <Table.Row key={`skeleton-${idx}`}>
+                    <Table.Cell>
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="h-4 w-36 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="h-4 w-52 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="flex space-x-2">
+                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                       </div>
-                    )}
-                  </Table.Cell>
-                  <Table.Cell>{category.name}</Table.Cell>
-                  <Table.Cell>{category.description}</Table.Cell>
-                  <Table.Cell>
-                    <div className="flex space-x-2">
-                      <Button color="success" onClick={() => handleEditCategory(category)}>
-                        <HiPencil />
-                      </Button>
-                      <Button color="failure" onClick={() => handleDeleteCategory(category)}>
-                        <HiTrash />
-                      </Button>
-                    </div>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              ) : (
+                categories.map((category) => (
+                  <Table.Row key={category.id}>
+                    <Table.Cell>
+                      {category.imageUrl ? (
+                        <img 
+                          src={category.imageUrl} 
+                          alt={category.name}
+                          className="w-12 h-12 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <span className="text-gray-400 text-xs">Sin imagen</span>
+                        </div>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell>{category.name}</Table.Cell>
+                    <Table.Cell>{category.description}</Table.Cell>
+                    <Table.Cell>
+                      <div className="flex space-x-2">
+                        <Button color="success" onClick={() => handleEditCategory(category)}>
+                          <HiPencil />
+                        </Button>
+                        <Button color="failure" onClick={() => handleDeleteCategory(category)}>
+                          <HiTrash />
+                        </Button>
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              )}
             </Table.Body>
           </Table>
 

@@ -94,23 +94,48 @@ const TestComponent: FC = () => {
               <Table.HeadCell>Acciones</Table.HeadCell>
             </Table.Head>
             <Table.Body>
-              {tests.map((test) => (
-                <Table.Row key={test.id}>
-                  <Table.Cell>{test.name}</Table.Cell>
-                  <Table.Cell>{test.description}</Table.Cell>
-                  <Table.Cell>{test.subcategory.name}</Table.Cell>
-                  <Table.Cell>
-                    <div className="flex space-x-2">
-                      <Button color="success" onClick={() => handleEditTest(test)}>
-                        <HiPencil />
-                      </Button>
-                      <Button color="failure" onClick={() => handleDeleteTest(test)}>
-                        <HiTrash />
-                      </Button>
-                    </div>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+              {tests.length === 0 ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <Table.Row key={`skeleton-${idx}`}>
+                    <Table.Cell>
+                      <div className="h-4 w-36 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="space-y-2">
+                        <div className="h-4 w-52 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-3 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="h-4 w-44 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="flex space-x-2">
+                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              ) : (
+                tests.map((test) => (
+                  <Table.Row key={test.id}>
+                    <Table.Cell>{test.name}</Table.Cell>
+                    <Table.Cell>{test.description}</Table.Cell>
+                    <Table.Cell>{test.subcategory.name}</Table.Cell>
+                    <Table.Cell>
+                      <div className="flex space-x-2">
+                        <Button color="success" onClick={() => handleEditTest(test)}>
+                          <HiPencil />
+                        </Button>
+                        <Button color="failure" onClick={() => handleDeleteTest(test)}>
+                          <HiTrash />
+                        </Button>
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              )}
             </Table.Body>
           </Table>
           <div className="flex justify-center mt-4">
