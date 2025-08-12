@@ -2,12 +2,12 @@ import { Category } from "../models/Category";
 import { APIQuestion } from "../models/Question";
 import { SubcategoryDetail } from "../models/Subcategory";
 import { Test } from "../models/Tets";
+import { getCategoriesGraphQL } from "./GraphQLService";
 import { 
-  getCategoriesGraphQL, 
   CategoryConnection, 
   CategoryGraphQL, 
   PaginationInput 
-} from "./GraphQLService";
+} from "./types";
 
 // Función para convertir CategoryGraphQL a Category
 const convertGraphQLCategoryToCategory = (graphqlCategory: CategoryGraphQL): Category => {
